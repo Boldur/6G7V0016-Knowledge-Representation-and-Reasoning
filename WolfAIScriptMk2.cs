@@ -202,24 +202,23 @@ public class WolfAIScriptMk2 : MonoBehaviour
     private bool CheckQValue()
     {
         if (qTable.Count == 0) return false;
-        if (!qTable.ContainsKey(TimeIndex)) return false; // Current state not in Q-table
+        if (!qTable.ContainsKey(TimeIndex)) return false; 
 
         // Get the current Q-value
         float currentQ = qTable[TimeIndex];
 
-        // Normalize Q-values to prevent overflow
         float maxQ = GetMaxQValue(); // Find the maximum Q-value
         float sum = 0;
 
         foreach (var qValue in qTable.Values)
         {
-            sum += Mathf.Exp(qValue - maxQ); // Normalize using maxQ
+            sum += Mathf.Exp(qValue - maxQ);
         }
 
         // Calculate the softmax probability
         float probability = Mathf.Exp(currentQ - maxQ) / sum;
 
-        // Fallback to direct exploitation if current Q-value is close to the max
+        
         if (Mathf.Approximately(currentQ, maxQ)) return true; // Exploit high-confidence states
 
         // Use probability-based selection otherwise
@@ -239,7 +238,7 @@ public class WolfAIScriptMk2 : MonoBehaviour
             qTable[guessedTimeIndex] = 0; // Initialize if state is missing
         }
 
-        // Q-Learning update rule
+        // Q-Learning update rule yay
         qTable[guessedTimeIndex] += learningRate * (reward + discountFactor * GetMaxQValue() - qTable[guessedTimeIndex]);
 
         // Update UI with the new reward
@@ -273,6 +272,7 @@ public class WolfAIScriptMk2 : MonoBehaviour
                 epsilon = Mathf.Max(0.1f, epsilon * epsilonDecay); // Minimum value 0.1
                 ConsecutiveFailures++;
             }
+            // grow epsilon incase of constant failures
             else epsilon = Mathf.Min(1.0f, epsilon + epsilonGrowth); // Cap exploration at 1.0
         }
 
